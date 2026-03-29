@@ -1,14 +1,3 @@
-"""
-optimizer/cli.py — LocusOpt P2
-
-Command-line interface for LocusOpt Phase 2.
-
-Usage
------
-::
-
-    python main.py analyze <source.c> [--func FUNC]
-"""
 
 from __future__ import annotations
 
@@ -20,10 +9,6 @@ from . import __version__
 from .analyzer import analyse_file
 from .dependence import check_dependence
 
-
-# ---------------------------------------------------------------------------
-# ANSI colours (fallback to plain if terminal doesn't support)
-# ---------------------------------------------------------------------------
 
 def _colour(text: str, code: str) -> str:
     if sys.stdout.isatty():
@@ -37,9 +22,6 @@ def _red(t):    return _colour(t, "31")
 def _bold(t):   return _colour(t, "1")
 
 
-# ---------------------------------------------------------------------------
-# Sub-command handler
-# ---------------------------------------------------------------------------
 
 def cmd_analyze(args: argparse.Namespace) -> int:
     """Analyse *args.source* and print a report."""
@@ -77,10 +59,6 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     return 0
 
 
-# ---------------------------------------------------------------------------
-# Argument parser
-# ---------------------------------------------------------------------------
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="locusopt-p2",
@@ -105,10 +83,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     return parser
 
-
-# ---------------------------------------------------------------------------
-# Dispatch
-# ---------------------------------------------------------------------------
 
 def main(argv=None) -> int:
     parser = build_parser()
