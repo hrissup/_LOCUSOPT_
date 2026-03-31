@@ -1,33 +1,3 @@
-"""
-optimizer/dependence.py
-
-Conservative dependence analysis for loop transformations.
-
-The goal is to determine whether it is *safe* to apply loop interchange
-or loop tiling to a given loop nest.  We err on the side of caution:
-if we cannot prove safety, we reject the transformation.
-
-Supported pattern
------------------
-A 2-D (or 3-D) loop nest is safe to interchange/tile if:
-
-1. No array appears on both the left-hand side (write) and right-hand
-   side (read) *with different indices* (i.e. no read-after-write or
-   write-after-read across iterations).
-
-2. All array index expressions are *affine* in the loop variables — that
-   is, they look like ``c0*i + c1*j + c2`` (we check this via a simple
-   regex, not full Presburger arithmetic).
-
-3. No index expression references an iteration-relative value that would
-   create a loop-carried dependence.  Specifically, any subscript of the
-   form ``var ± const`` where ``var`` is a loop induction variable implies
-   a potential stencil dependency; we flag this conservatively.
-
-For the known kernels in LocusOpt (transpose, matmul, matrix_add,
-image_blur, vector_add) the analysis produces correct results.
-"""
-
 from __future__ import annotations
 
 import re
@@ -179,7 +149,6 @@ def check_dependence(nest: LoopNest) -> DependenceResult:
                             f"Write with stencil index to '{arr}' at '{idx_expr}'."
                         )
 
-    # Arrays read with stencil but not written are safe (read-only stencil)
     for arr, read_accesses in reads.items():
         if arr not in writes:
             for ra in read_accesses:
@@ -203,8 +172,6 @@ def check_dependence(nest: LoopNest) -> DependenceResult:
             details=details,
         )
 
-    # All writes are to indices that don't carry dependencies
-    # Tiling is safe; interchange is safe for 2-D nests
     depth = len(nest.loops)
     safe_interchange = depth == 2 and not has_loop_carried_dep
     safe_tiling = not has_loop_carried_dep
