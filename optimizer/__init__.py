@@ -1,8 +1,2 @@
-"""
-LocusOpt
-
-Supports parsing and cache-locality analysis of C numerical kernels.
-"""
-
-__version__ = "0.4.0"
-__author__ = "LocusOpt"
+__version__ = "1.0"
+__author__ = "Hrishabh"
