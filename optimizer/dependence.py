@@ -16,7 +16,7 @@ class DependenceResult:
     """Outcome of dependence analysis for a loop nest."""
     safe_interchange: bool
     safe_tiling: bool
-    reason: str                     # human-readable explanation
+    reason: str                    
     details: List[str] = field(default_factory=list)
 
 
@@ -25,7 +25,7 @@ class DependenceResult:
 # ---------------------------------------------------------------------------
 
 _LOOP_CARRIED_PATTERN = re.compile(
-    r"\b(\w+)\s*[+\-]\s*\d+",     # e.g.  i - 1,  j + 2
+    r"\b(\w+)\s*[+\-]\s*\d+",    
 )
 
 
@@ -109,17 +109,16 @@ def check_dependence(nest: LoopNest) -> DependenceResult:
     #    across different index tuples
     # ------------------------------------------------------------------ #
     has_loop_carried_dep = False
-    stencil_read_only: Set[str] = set()  # arrays read with stencil but not written
+    stencil_read_only: Set[str] = set() 
 
     for arr, write_accesses in writes.items():
         write_indices = [tuple(wa.indices) for wa in write_accesses]
 
         if arr in reads:
-            # Array both read and written
+        
             for ra in reads[arr]:
                 r_idx = tuple(ra.indices)
-                # If any read index has a stencil offset (e.g. A[i-1][j])
-                # and the array is also written, there is a loop-carried dep
+                
                 for idx_expr in ra.indices:
                     if _is_stencil_index(idx_expr, loop_vars):
                         details.append(
@@ -127,21 +126,21 @@ def check_dependence(nest: LoopNest) -> DependenceResult:
                             f"read with stencil index '{idx_expr}'."
                         )
                         has_loop_carried_dep = True
-                # If read and write use the *same* tuple → point-wise, safe
+                
                 if r_idx not in write_indices:
-                    # Different indices — check if this could be a dep
+                
                     for w_idx in write_indices:
                         if r_idx != w_idx:
                             details.append(
                                 f"Potential dependence: '{arr}' written at "
                                 f"{list(w_idx)} and read at {list(r_idx)}."
                             )
-                            # Only mark as dep if indices differ by a stencil
+                
                             if any(_is_stencil_index(i, loop_vars)
                                    for i in list(r_idx) + list(w_idx)):
                                 has_loop_carried_dep = True
         else:
-            # Written but not read — check write indices for stencil
+    
             for wa in write_accesses:
                 for idx_expr in wa.indices:
                     if _is_stencil_index(idx_expr, loop_vars):
