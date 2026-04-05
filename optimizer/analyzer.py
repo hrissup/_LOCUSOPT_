@@ -4,7 +4,7 @@ PHASES OF THIS FILE (BY HRISHABH :)
 1. Foundation (Import & Setup)
 2. Data Classes (Containers)
 3. Helper Functions (Building Blocks)
-4. Core Analysis (Main Loogic)
+4. Core Analysis (Main Logic)
 5. Integration (Final Touch)
 
 """
